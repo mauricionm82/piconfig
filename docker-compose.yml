@@ -22,7 +22,7 @@ services:
       - TOKEN=2b7e035e-6c4c-4ea3-99eb-f76eb1308c91
       - LOG_FILE=false #optional
     volumes:
-      - /home/umbrel/duckdns/data/duckdns/config:/config #optional
+      - /home/pi/duckdns/data/duckdns/config:/config #optional
     restart: unless-stopped
 
 
@@ -46,7 +46,7 @@ services:
       - EXTRA_DOMAINS= #optional
       - STAGING=false #optional
     volumes:
-      - /home/umbrel/swag/data/swag/config:/config
+      - /home/pi/swag/data/swag/config:/config
     ports:
       - 443:443
 #      - 80:80 #optional
@@ -62,7 +62,7 @@ services:
     restart: unless-stopped
     hostname: "unbound"
     volumes:
-      - "/home/umbrel/unbound:/opt/unbound/etc/unbound/"
+      - "/home/pi/unbound:/opt/unbound/etc/unbound/"
     networks:
       private_network:
         ipv4_address: 10.2.0.200
@@ -87,7 +87,7 @@ services:
 #      - INTERNAL_SUBNET=10.2.0.0
       - INTERNAL_SUBNET=192.168.1.0
     volumes:
-      - /home/umbrel/wireguard:/config
+      - /home/pi/wireguard:/config
       - /lib/modules:/lib/modules
     ports:
       - "51820:51820/udp"
@@ -110,7 +110,7 @@ services:
       - 9000:9000
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '/home/umbrel/pihole/portainer_data:/data'
+      - '/home/pi/pihole/portainer_data:/data'
     hostname: portainer
     environment:
       logo: 'https://www.docker.com/sites/all/themes/docker/assets/images/brand-full.svg'
@@ -124,7 +124,7 @@ services:
     ports:
       - 19999:19999
     volumes:
-      - /home/umbrel/netdata:/etc/netdata
+      - /home/pi/netdata:/etc/netdata
     restart: always
     hostname: netstat
     networks:
@@ -148,8 +148,8 @@ services:
       DNS2: 192.168.1.254 # If we don't specify two, it will auto pick google.
     # Volumes store your data between container upgrades
     volumes:
-      - '/home/umbrel/pihole/etc-pihole/:/etc/pihole/'
-      - '/home/umbrel/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+      - '/home/pi/pihole/etc-pihole/:/etc/pihole/'
+      - '/home/pi/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
       - '/etc/resolv.conf:/etc/resolv.conf'
     # Recommended but not required (DHCP needs NET_ADMIN)
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
