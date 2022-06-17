@@ -1,0 +1,161 @@
+version: "3"
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+
+networks:
+  private_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.2.0.0/24
+
+services:
+
+  duckdns:
+    image: linuxserver/duckdns
+    container_name: duckdns
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=America/Mexico_City
+      - SUBDOMAINS=mnmcloud,
+      - TOKEN=2b7e035e-6c4c-4ea3-99eb-f76eb1308c91
+      - LOG_FILE=false #optional
+    volumes:
+      - /home/umbrel/duckdns/data/duckdns/config:/config #optional
+    restart: unless-stopped
+
+
+  swag:
+    image: linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_City
+      - URL=mnmcloud.duckdns.org
+      - SUBDOMAINS=www,
+      - VALIDATION=duckdns
+      - DNSPLUGIN=cloudflare #optional
+      - PROPAGATION= #optional
+      - DUCKDNSTOKEN=2b7e035e-6c4c-4ea3-99eb-f76eb1308c91
+      - EMAIL= #optional
+      - ONLY_SUBDOMAINS=false #optional
+      - EXTRA_DOMAINS= #optional
+      - STAGING=false #optional
+    volumes:
+      - /home/umbrel/swag/data/swag/config:/config
+    ports:
+      - 443:443
+#      - 80:80 #optional
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.201
+    restart: unless-stopped
+
+
+  unbound:
+    image: "mvance/unbound:latest"
+    container_name: unbound
+    restart: unless-stopped
+    hostname: "unbound"
+    volumes:
+      - "/home/umbrel/unbound:/opt/unbound/etc/unbound/"
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.200
+
+
+  wireguard:
+    depends_on: [unbound, pihole]
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Mexico_City # Change to your timezone
+      - SERVERPORT=51820
+      - SERVERURL=mnmcloud.duckdns.org #optional - For use with DDNS (Uncomment to use)
+      - PEERS=1 # How many peers to generate for you (clients)
+      - PEERDNS=10.2.0.100 # Set it to point to pihole
+#      - INTERNAL_SUBNET=10.6.0.0
+#      - INTERNAL_SUBNET=10.2.0.0
+      - INTERNAL_SUBNET=192.168.1.0
+    volumes:
+      - /home/umbrel/wireguard:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - "51820:51820/udp"
+      - "51820:51820/tcp"
+    dns:
+      - 10.2.0.100 # Points to pihole
+      - 10.2.0.200 # Points to unbound
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.3
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/home/umbrel/pihole/portainer_data:/data'
+    hostname: portainer
+    environment:
+      logo: 'https://www.docker.com/sites/all/themes/docker/assets/images/brand-full.svg'
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.205
+
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
+    ports:
+      - 19999:19999
+    volumes:
+      - /home/umbrel/netdata:/etc/netdata
+    restart: always
+    hostname: netstat
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.207
+
+  pihole:
+    depends_on: [unbound]
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "1080:80/tcp"
+    environment:
+      TZ: 'America/Mexico_City'
+      WEBPASSWORD: '53gur1d4D!'
+      ServerIP: 10.1.0.100 # Internal IP of pihole
+      DNS1: 10.2.0.200 # Unbound IP
+      DNS2: 192.168.1.254 # If we don't specify two, it will auto pick google.
+    # Volumes store your data between container upgrades
+    volumes:
+      - '/home/umbrel/pihole/etc-pihole/:/etc/pihole/'
+      - '/home/umbrel/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+      - '/etc/resolv.conf:/etc/resolv.conf'
+    # Recommended but not required (DHCP needs NET_ADMIN)
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.100
+    restart: unless-stopped
