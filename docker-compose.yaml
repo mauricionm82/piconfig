@@ -120,7 +120,7 @@ services:
       - db
 
   db:
-    container_name: maria-db
+    container_name: mariadb
     restart: unless-stopped
     image: maria-db
     environment:
