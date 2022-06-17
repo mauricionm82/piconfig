@@ -129,7 +129,7 @@ services:
       MYSQL_USER: nextcloud
       MYSQL_PASSWORD: nextcloud
     volumes:
-      - /home/pi/mariadb:/var7lib/mysql
+      - /home/pi/mariadb:/var/lib/mysql
     networks:
       private_network:
         ipv4_address: 10.2.0.203
