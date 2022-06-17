@@ -111,7 +111,7 @@ services:
     - /home/pi/compose/data/nextcloud/config:/config
     - /home/pi/compose/data/nextcloud/data:/data
   ports:
-    - 2443:443
+    - 2443:2443
   restart: unless-stopped
   networks:
     private_network:
