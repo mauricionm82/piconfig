@@ -101,21 +101,21 @@ services:
         ipv4_address: 10.2.0.3
   
   nextcloud:
-  image: linuxserver/nextcloud
-  container_name: nextcloud
-  environment:
-    - PUID=1000
-    - PGID=1000
-    - TZ=Europe/Madrid
-  volumes:
-    - /home/pi/compose/data/nextcloud/config:/config
-    - /home/pi/compose/data/nextcloud/data:/data
-  ports:
-    - 2443:2443
-  restart: unless-stopped
-  networks:
-    private_network:
-      ipv4_address: 10.2.0.202
+    image: linuxserver/nextcloud
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - /home/pi/compose/data/nextcloud/config:/config
+      - /home/pi/compose/data/nextcloud/data:/data
+    ports:
+      - 2443:2443
+    restart: unless-stopped
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.202
 
   portainer:
     container_name: portainer
