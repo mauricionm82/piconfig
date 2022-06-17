@@ -106,12 +106,12 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Europe/Madrid
+      - TZ=America/Mexico_City # Change to your timezone
     volumes:
       - /home/pi/nextcloud/compose/data/nextcloud/config:/config
       - /home/pi/nextcloud/compose/data/nextcloud/data:/data
     ports:
-      - 2443:2443
+      - 2443:443
     restart: unless-stopped
     networks:
       private_network:
