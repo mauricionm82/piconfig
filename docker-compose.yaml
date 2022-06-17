@@ -122,7 +122,7 @@ services:
   db:
     container_name: mariadb
     restart: unless-stopped
-    image: maria-db
+    image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ncdb
