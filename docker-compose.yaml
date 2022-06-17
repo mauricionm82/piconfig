@@ -108,8 +108,8 @@ services:
       - PGID=1000
       - TZ=Europe/Madrid
     volumes:
-      - /home/pi/compose/data/nextcloud/config:/config
-      - /home/pi/compose/data/nextcloud/data:/data
+      - /home/pi/nextcloud/compose/data/nextcloud/config:/config
+      - /home/pi/nextcloud/compose/data/nextcloud/data:/data
     ports:
       - 2443:2443
     restart: unless-stopped
