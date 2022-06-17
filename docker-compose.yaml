@@ -116,6 +116,23 @@ services:
     networks:
       private_network:
         ipv4_address: 10.2.0.202
+    depends_on:
+      - db
+
+  db:
+    container_name: maria-db
+    restart: unless-stopped
+    image: maria-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ncdb
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud
+    volumes:
+      - /home/pi/mariadb:/var7lib/mysql
+    networks:
+      private_network:
+        ipv4_address: 10.2.0.203
 
   portainer:
     container_name: portainer
