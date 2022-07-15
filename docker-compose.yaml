@@ -174,7 +174,7 @@ services:
       - SUBFOLDER=/ #optional
     volumes:
       - /home/pi/emulatorjs/config:/config
-      - /home/pi/emulatorjsdata:/data
+      - /home/pi/emulatorjs/data:/data
     ports:
       - 3000:3000
       - 2080:2080
