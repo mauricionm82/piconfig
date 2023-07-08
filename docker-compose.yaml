@@ -102,7 +102,7 @@ services:
   
   
   nextcloud:
-    image: lscr.io/linuxserver/nextcloud:26.0.2-ls246
+    image: lscr.io/linuxserver/nextcloud
     container_name: nextcloud
     environment:
       - PUID=1000
